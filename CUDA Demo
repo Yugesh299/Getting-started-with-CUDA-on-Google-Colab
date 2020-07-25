@@ -1,0 +1,32 @@
+from numba import jit, cuda 
+import numpy as np 
+from timeit import default_timer as timer    # to measure exec time 
+  
+# normal function to run on cpu 
+def fun_CPU(array,n):                                 
+    for i in range(n): 
+        array[i]+= 1      
+  
+# function optimized to run on gpu  
+@cuda.jit                         
+def fun_GPU(array,n): 
+    for i in range(n): 
+        array[i]+= 1
+
+
+if __name__=="__main__": 
+    n =  10    #Keep on increasing this value by 10 folds and see the magic of GPU.                     
+    array = np.ones(n, dtype = np.float64) 
+
+
+    start_CPU = timer() 
+    fun_CPU(array,n) 
+    CPU_time = timer() - start_CPU
+    print("without GPU:",CPU_time,"seconds" )     
+      
+    start_GPU = timer() 
+    fun_GPU(array,n) 
+    GPU_time = timer() - start_GPU
+    print("with    GPU:",GPU_time,"seconds")
+
+    print("Speedup that we got using GPU: ",CPU_time/GPU_time) 
